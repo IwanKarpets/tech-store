@@ -1,6 +1,7 @@
 // cart context
 import React from 'react';
 import localCart from '../utils/localCart';
+import reducer from './reducer';
 
 const CartContext = React.createContext();
 
@@ -8,9 +9,9 @@ function getCartFromLocalStorage(){
     return localStorage.getItem('cart')? JSON.parse(localStorage.getItem('cart')):[]
 }
 
-
 function CartProvider({children}){
-    const [cart, setCart]= React.useState(getCartFromLocalStorage);
+const cartI  = getCartFromLocalStorage()
+    const [cart, dispatch]= React.useReducer(reducer, cartI);
     const [total, setTotal]= React.useState(0);
     const [cartItems, setCartItems]= React.useState(0);
 
@@ -32,52 +33,60 @@ function CartProvider({children}){
             return total +=(cartItem.amount*cartItem.price)
         },0);
 
-        setTotal(parseFloat(newTotal).toFixed(1) )
+        setTotal(parseFloat(newTotal).toFixed(1))
 
     },[cart])
 
     const removeItem = id =>{
-        setCart([...cart].filter(item=>item.id!==id))
+        dispatch({type:'REMOVE', payload:id})
+
+        // let newCart = cart.filter(item=>item.id!==id)
+        //setCart([...cart].filter(item=>item.id!==id))
     };
 
     const increaseAmount = (id) =>{
-       
+        dispatch({type: "INCREASE", payload: id})
       
-        const newCart = [...cart].map(item=>{
-            return item.id = id ? {...item, amount: item.amount+1}: {...item, amount:item.amount}
-        })
+        // const newCart = [...cart].map(item=>{
+        //     return item.id = id ? {...item, amount: item.amount+1}: {...item, amount:item.amount}
+        // })
 
-        setCart(newCart)
-
-
+        // setCart(newCart)
 
     };
     const decreaseAmount = (id, amount) =>{
         if(amount===1){
-            removeItem(id)
+            dispatch({type: "REMOVE", payload:id})
+            //removeItem(id)
             return
         }
 
-        const newCart = [...cart].map(item=>{
-            return item.id===id? {...item, amount: item.amount-1}:{...item}
-        })
+        dispatch({type:"DECREASE", payload:id})
 
-        setCart(newCart)
+        // const newCart = [...cart].map(item=>{
+        //     return item.id===id? {...item, amount: item.amount-1}:{...item}
+        // })
+
+        // setCart(newCart)
     };
-    const addToCart = product =>{
+     const addToCart = product =>{
        const {id, image, title, price} = product;
-       const item = [...cart].find(item=>item.id===id);
+       const item = [...cart].find(item=>item.id===product.id);
        if(item){
-           increaseAmount(id)
+        dispatch({type: "INCREASE", payload: product.id}) 
        }
-           const newItem = {id, image, title, price, amount:1};
-           const newCart =[...cart, newItem];
-           console.log(newCart)
-           setCart(newCart)
+
+       else{
+           dispatch({type:"ADDTOCART", payload:product})
+       }
+    //        const newItem = {id, image, title, price, amount:1};
+    //        const newCart =[...cart, newItem];
+    //        setCart(newCart)
        
     };
     const clearCart = () =>{
-        setCart([])
+        dispatch({type: "CLEARCART"})
+        //setCart([])
     };
 
 
