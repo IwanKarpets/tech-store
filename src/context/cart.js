@@ -2,6 +2,7 @@
 import React from 'react';
 import localCart from '../utils/localCart';
 import reducer from './reducer';
+import { REMOVE, INCREASE, DECREASE, ADD_TO_CART, CLEARCART } from './actions';
 
 const CartContext = React.createContext();
 
@@ -38,14 +39,14 @@ const cartI  = getCartFromLocalStorage()
     },[cart])
 
     const removeItem = id =>{
-        dispatch({type:'REMOVE', payload:id})
+        dispatch({type:REMOVE, payload:id})
 
         // let newCart = cart.filter(item=>item.id!==id)
         //setCart([...cart].filter(item=>item.id!==id))
     };
 
     const increaseAmount = (id) =>{
-        dispatch({type: "INCREASE", payload: id})
+        dispatch({type: INCREASE, payload: id})
       
         // const newCart = [...cart].map(item=>{
         //     return item.id = id ? {...item, amount: item.amount+1}: {...item, amount:item.amount}
@@ -56,12 +57,12 @@ const cartI  = getCartFromLocalStorage()
     };
     const decreaseAmount = (id, amount) =>{
         if(amount===1){
-            dispatch({type: "REMOVE", payload:id})
+            dispatch({type: REMOVE, payload:id})
             //removeItem(id)
             return
         }
 
-        dispatch({type:"DECREASE", payload:id})
+        dispatch({type:DECREASE, payload:id})
 
         // const newCart = [...cart].map(item=>{
         //     return item.id===id? {...item, amount: item.amount-1}:{...item}
@@ -73,11 +74,11 @@ const cartI  = getCartFromLocalStorage()
        const {id, image, title, price} = product;
        const item = [...cart].find(item=>item.id===product.id);
        if(item){
-        dispatch({type: "INCREASE", payload: product.id}) 
+        dispatch({type: INCREASE, payload: product.id}) 
        }
 
        else{
-           dispatch({type:"ADDTOCART", payload:product})
+           dispatch({type:ADD_TO_CART, payload:product})
        }
     //        const newItem = {id, image, title, price, amount:1};
     //        const newCart =[...cart, newItem];
@@ -85,7 +86,7 @@ const cartI  = getCartFromLocalStorage()
        
     };
     const clearCart = () =>{
-        dispatch({type: "CLEARCART"})
+        dispatch({type: CLEARCART})
         //setCart([])
     };
 
